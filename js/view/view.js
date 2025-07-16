@@ -35,7 +35,17 @@ const view = {
     },
 
     renderField(field) {
-        // ... (igual que antes)
+        switch (field.type) {
+            case 'textarea':
+                return `<textarea id="${field.name}" name="${field.name}" ${field.required ? 'required' : ''}></textarea>`;
+            case 'select':
+                return `
+                    <select id="${field.name}" name="${field.name}">
+                        ${field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+                    </select>`;
+            default:
+                return `<input type="${field.type}" id="${field.name}" name="${field.name}" ${field.required ? 'required' : ''}>`;
+        }
     },
 
     renderTable(module, records) {

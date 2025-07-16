@@ -32,7 +32,7 @@ const controller = {
         view.renderTable(module, records);
     },
 
-    handleMenuCKick(moduleKey) {
+    handleMenuClick(moduleKey) {
         this.loadModule(moduleKey);
         view.dropdown.classList.remove('active');
     },
