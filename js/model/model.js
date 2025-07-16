@@ -1,5 +1,5 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const modules = {
+const model = {
+    modules: {
         gdd: {
             title: 'Glosario y Diccionario de Datos',
             fields: [
@@ -87,135 +87,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 { name: 'validationPlan', label: 'Plan de Validación Post-Migración', type: 'textarea', tooltip: 'Estrategia para verificar que los datos se migraron correctamente.' }
             ]
         }
-    };
+    },
 
-    const appContainer = document.getElementById('app');
-    const menuLinks = document.querySelectorAll('.menu a');
+    getModule(key) {
+        return this.modules[key];
+    },
 
-    const renderModule = (moduleKey) => {
-        const module = modules[moduleKey];
-        if (!module) return;
-
-        let formHtml = `<h2>${module.title}</h2>`;
-        module.fields.forEach(field => {
-            formHtml += `
-                <div class="form-group">
-                    <label for="${field.name}">${field.label} ${field.required ? '*' : ''}</label>
-                    ${field.type === 'textarea' ?
-                        `<textarea id="${field.name}" name="${field.name}" ${field.required ? 'required' : ''}></textarea>` :
-                    field.type === 'select' ?
-                        `<select id="${field.name}" name="${field.name}">
-                            ${field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
-                        </select>` :
-                        `<input type="${field.type}" id="${field.name}" name="${field.name}" ${field.required ? 'required' : ''}>`
-                    }
-                    ${field.tooltip ? `<span class="tooltip">? <span class="tooltiptext">${field.tooltip}</span></span>` : ''}
-                </div>
-            `;
-        });
-
-        formHtml += `
-            <div class="buttons">
-                <button class="btn btn-primary btn-save">Guardar</button>
-                <button class="btn btn-secondary btn-clear">Limpiar</button>
-                <button class="btn btn-export btn-excel">Exportar a Excel</button>
-                <button class="btn btn-export btn-pdf">Exportar a PDF</button>
-            </div>
-        `;
-
-        appContainer.innerHTML = formHtml;
-        loadModuleData(moduleKey);
-
-        appContainer.querySelector('.btn-save').addEventListener('click', () => saveModuleData(moduleKey));
-        appContainer.querySelector('.btn-clear').addEventListener('click', () => clearModuleData(moduleKey));
-        appContainer.querySelector('.btn-excel').addEventListener('click', () => exportToExcel(moduleKey));
-        appContainer.querySelector('.btn-pdf').addEventListener('click', () => exportToPdf(moduleKey));
-    };
-
-    const exportToExcel = (moduleKey) => {
-        const module = modules[moduleKey];
-        const data = module.fields.map(field => {
-            const input = document.getElementById(field.name);
-            return {
-                'Campo': field.label,
-                'Valor': input.value
-            };
-        });
-
-        const worksheet = XLSX.utils.json_to_sheet(data);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, module.title);
-        XLSX.writeFile(workbook, `${module.title}.xlsx`);
-    };
-
-    const exportToPdf = (moduleKey) => {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        const module = modules[moduleKey];
-
-        doc.setFontSize(18);
-        doc.text(module.title, 14, 22);
-        doc.setFontSize(11);
-        let y = 30;
-
-        modules[moduleKey].fields.forEach(field => {
-            const input = document.getElementById(field.name);
-            doc.text(`${field.label}:`, 14, y);
-            doc.text(input.value, 14, y + 6, { maxWidth: 180 });
-            y += 20;
-        });
-
-        doc.save(`${module.title}.pdf`);
-    };
-
-    const saveModuleData = (moduleKey) => {
-        const data = {};
-        modules[moduleKey].fields.forEach(field => {
-            const input = document.getElementById(field.name);
-            data[field.name] = input.value;
-        });
+    saveData(moduleKey, data) {
         localStorage.setItem(moduleKey, JSON.stringify(data));
-        alert('¡Progreso guardado localmente!');
-    };
+    },
 
-    const loadModuleData = (moduleKey) => {
+    loadData(moduleKey) {
         const savedData = localStorage.getItem(moduleKey);
-        if (savedData) {
-            const data = JSON.parse(savedData);
-            modules[moduleKey].fields.forEach(field => {
-                const input = document.getElementById(field.name);
-                if (input && data[field.name]) {
-                    input.value = data[field.name];
-                }
-            });
-        }
-    };
+        return savedData ? JSON.parse(savedData) : null;
+    },
 
-    const clearModuleData = (moduleKey) => {
-        modules[moduleKey].fields.forEach(field => {
-            const input = document.getElementById(field.name);
-            if (input) {
-                input.value = '';
-            }
-        });
+    clearData(moduleKey) {
         localStorage.removeItem(moduleKey);
-        alert('Formulario limpiado.');
-    };
-
-    menuLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const moduleKey = e.target.dataset.module;
-
-            menuLinks.forEach(l => l.classList.remove('active'));
-            e.target.classList.add('active');
-
-            renderModule(moduleKey);
-        });
-    });
-
-    // Cargar el primer módulo por defecto
-    if (menuLinks.length > 0) {
-        menuLinks[0].click();
     }
-});
+};
