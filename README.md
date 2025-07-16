@@ -2,6 +2,8 @@
 
 Este proyecto es una aplicación web interactiva diseñada como un dashboard educativo y funcional para gestionar los principales dominios del Gobierno de Datos, basándose en el marco de referencia DAMA-DMBOK 2.
 
+**URL del Proyecto (GitHub Pages):** `https://[tu-usuario].github.io/[tu-repositorio]/`
+
 ## Descripción
 
 La aplicación proporciona una interfaz limpia y organizada con una barra lateral de navegación que permite acceder a diez módulos temáticos. Cada módulo corresponde a un área de conocimiento clave del Gobierno de Datos y presenta un formulario interactivo para que los usuarios puedan registrar, gestionar y simular información relevante.
@@ -16,6 +18,7 @@ El objetivo principal es ofrecer una herramienta práctica para que profesionale
 - **Exportación de Datos:** Exporta la información de cada módulo a formatos **Excel (.xlsx)** y **PDF**.
 - **Diseño Responsivo:** Interfaz limpia y adaptable a diferentes tamaños de pantalla.
 - **Cero Dependencias Externas (Producción):** Funciona directamente en el navegador sin necesidad de un backend o un proceso de build.
+- **Arquitectura MVC (Frontend):** El código está estructurado siguiendo un patrón Modelo-Vista-Controlador para facilitar su escalabilidad y mantenimiento.
 
 ## Módulos Incluidos
 
