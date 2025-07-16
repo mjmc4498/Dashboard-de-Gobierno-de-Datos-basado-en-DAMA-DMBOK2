@@ -2,6 +2,8 @@ const view = {
     appContainer: document.getElementById('app'),
     recordsTable: document.getElementById('records-table'),
     menuLinks: document.querySelectorAll('.dropdown-content a'),
+    dropdown: document.querySelector('.dropdown'),
+    dropbtn: document.querySelector('.dropbtn'),
 
     renderModule(module) {
         if (!module) return;
@@ -76,6 +78,14 @@ const view = {
             data[field.name] = input.value;
         });
         return data;
+    },
+
+    setActiveLink(moduleKey) {
+        this.menuLinks.forEach(l => l.classList.remove('active'));
+        const link = document.querySelector(`.dropdown-content a[data-module="${moduleKey}"]`);
+        if (link) {
+            link.classList.add('active');
+        }
     },
 
     bindSave(handler) {

@@ -56,8 +56,12 @@ body {
     background-color: #f1f1f1;
 }
 
-.top-nav .dropdown:hover .dropdown-content {
+.top-nav .dropdown.active .dropdown-content {
     display: block;
+}
+
+.top-nav .dropdown-content a.active {
+    background-color: #ddd;
 }
 
 .content {

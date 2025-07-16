@@ -2,6 +2,10 @@ const controller = {
     currentModuleKey: null,
 
     init() {
+        view.dropbtn.addEventListener('click', () => {
+            view.dropdown.classList.toggle('active');
+        });
+
         view.bindMenu(this.handleMenuClick.bind(this));
         view.bindSave(this.handleAddRecord.bind(this));
         view.bindClearForm(this.handleClearForm.bind(this));
@@ -18,6 +22,7 @@ const controller = {
         this.currentModuleKey = moduleKey;
         const module = model.getModule(moduleKey);
         view.renderModule(module);
+        view.setActiveLink(moduleKey);
         this.updateRecordsTable();
     },
 
@@ -27,8 +32,9 @@ const controller = {
         view.renderTable(module, records);
     },
 
-    handleMenuClick(moduleKey) {
+    handleMenuCKick(moduleKey) {
         this.loadModule(moduleKey);
+        view.dropdown.classList.remove('active');
     },
 
     handleAddRecord() {
