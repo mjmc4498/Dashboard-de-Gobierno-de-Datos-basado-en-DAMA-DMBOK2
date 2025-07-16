@@ -3,7 +3,6 @@
 Este proyecto es una aplicación web interactiva diseñada como un dashboard educativo y funcional para gestionar los principales dominios del Gobierno de Datos, basándose en el marco de referencia DAMA-DMBOK 2.
 
 **URL del Proyecto (GitHub Pages):** `https://[tu-usuario].github.io/[tu-repositorio]/`
-https://mjmc4498.github.io/Dashboard-de-Gobierno-de-Datos-basado-en-DAMA-DMBOK2/
 
 ## Descripción
 

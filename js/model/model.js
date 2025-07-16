@@ -93,16 +93,31 @@ const model = {
         return this.modules[key];
     },
 
-    saveData(moduleKey, data) {
-        localStorage.setItem(moduleKey, JSON.stringify(data));
+    getRecords(moduleKey) {
+        const records = localStorage.getItem(moduleKey);
+        return records ? JSON.parse(records) : [];
     },
 
-    loadData(moduleKey) {
-        const savedData = localStorage.getItem(moduleKey);
-        return savedData ? JSON.parse(savedData) : null;
+    addRecord(moduleKey, record) {
+        const records = this.getRecords(moduleKey);
+        records.push(record);
+        localStorage.setItem(moduleKey, JSON.stringify(records));
     },
 
-    clearData(moduleKey) {
+    clearRecords(moduleKey) {
         localStorage.removeItem(moduleKey);
+    },
+
+    loadRecordsFromExcel(file, callback) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const json = XLSX.utils.sheet_to_json(worksheet);
+            callback(json);
+        };
+        reader.readAsArrayBuffer(file);
     }
 };

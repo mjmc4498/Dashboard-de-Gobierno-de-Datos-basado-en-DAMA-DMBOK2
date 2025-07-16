@@ -3,12 +3,13 @@ const controller = {
 
     init() {
         view.bindMenu(this.handleMenuClick.bind(this));
-        view.bindSave(this.handleSave.bind(this));
-        view.bindClear(this.handleClear.bind(this));
+        view.bindSave(this.handleAddRecord.bind(this));
+        view.bindClearForm(this.handleClearForm.bind(this));
+        view.bindClearRecords(this.handleClearRecords.bind(this));
+        view.bindImportExcel(this.handleImportExcel.bind(this));
         view.bindExportExcel(this.handleExportExcel.bind(this));
         view.bindExportPdf(this.handleExportPdf.bind(this));
 
-        // Cargar el primer módulo por defecto
         const firstModuleKey = view.menuLinks[0].dataset.module;
         this.loadModule(firstModuleKey);
     },
@@ -17,63 +18,76 @@ const controller = {
         this.currentModuleKey = moduleKey;
         const module = model.getModule(moduleKey);
         view.renderModule(module);
-        view.setActiveLink(moduleKey);
-        const data = model.loadData(moduleKey);
-        if (data) {
-            view.loadData(module, data);
-        }
+        this.updateRecordsTable();
+    },
+
+    updateRecordsTable() {
+        const module = model.getModule(this.currentModuleKey);
+        const records = model.getRecords(this.currentModuleKey);
+        view.renderTable(module, records);
     },
 
     handleMenuClick(moduleKey) {
         this.loadModule(moduleKey);
     },
 
-    handleSave() {
+    handleAddRecord() {
         const module = model.getModule(this.currentModuleKey);
-        const data = view.getFormData(module);
-        model.saveData(this.currentModuleKey, data);
-        alert('¡Progreso guardado localmente!');
+        const record = view.getFormData(module);
+        model.addRecord(this.currentModuleKey, record);
+        this.updateRecordsTable();
+        view.clearForm(module);
     },
 
-    handleClear() {
+    handleClearForm() {
         const module = model.getModule(this.currentModuleKey);
         view.clearForm(module);
-        model.clearData(this.currentModuleKey);
-        alert('Formulario limpiado.');
+    },
+
+    handleClearRecords() {
+        if (confirm('¿Estás seguro de que quieres borrar todos los registros de este módulo?')) {
+            model.clearRecords(this.currentModuleKey);
+            this.updateRecordsTable();
+        }
+    },
+
+    handleImportExcel(file) {
+        if (!file) return;
+        model.loadRecordsFromExcel(file, (records) => {
+            records.forEach(record => model.addRecord(this.currentModuleKey, record));
+            this.updateRecordsTable();
+        });
     },
 
     handleExportExcel() {
         const module = model.getModule(this.currentModuleKey);
-        const data = view.getFormData(module);
-        const exportData = module.fields.map(field => ({
-            'Campo': field.label,
-            'Valor': data[field.name]
-        }));
-
-        const worksheet = XLSX.utils.json_to_sheet(exportData);
+        const records = model.getRecords(this.currentModuleKey);
+        const worksheet = XLSX.utils.json_to_sheet(records);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, module.title);
-        XLSX.writeFile(workbook, `${module.title}.xlsx`);
+        XLSX.writeFile(workbook, `${module.title}_registros.xlsx`);
     },
 
     handleExportPdf() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const module = model.getModule(this.currentModuleKey);
-        const data = view.getFormData(module);
+        const records = model.getRecords(this.currentModuleKey);
 
         doc.setFontSize(18);
         doc.text(module.title, 14, 22);
-        doc.setFontSize(11);
-        let y = 30;
 
-        module.fields.forEach(field => {
-            doc.text(`${field.label}:`, 14, y);
-            doc.text(data[field.name] || '', 14, y + 6, { maxWidth: 180 });
-            y += 20;
+        const tableData = records.map(record =>
+            module.fields.map(field => record[field.name] || '')
+        );
+
+        doc.autoTable({
+            head: [module.fields.map(field => field.label)],
+            body: tableData,
+            startY: 30,
         });
 
-        doc.save(`${module.title}.pdf`);
+        doc.save(`${module.title}_registros.pdf`);
     }
 };
 

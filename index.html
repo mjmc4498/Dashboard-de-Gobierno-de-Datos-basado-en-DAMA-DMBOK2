@@ -7,28 +7,33 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <aside class="sidebar">
-            <h1 class="title">Centro de Gobierno de Datos</h1>
-            <nav class="menu">
-                <ul>
-                    <li><a href="#" data-module="gdd">Glosario y Diccionario de Datos</a></li>
-                    <li><a href="#" data-module="lcd">Laboratorio de Calidad de Datos</a></li>
-                    <li><a href="#" data-module="spa">Seguridad y Perfilamiento de Accesos</a></li>
-                    <li><a href="#" data-module="ade">Arquitectura de Datos Empresarial</a></li>
-                    <li><a href="#" data-module="srg">Simulador de Roles y Gobierno</a></li>
-                    <li><a href="#" data-module="cld">Catálogo y Lineaje de Datos</a></li>
-                    <li><a href="#" data-module="kmg">KPIs y Métricas de Gobierno</a></li>
-                    <li><a href="#" data-module="wcc">Workflow de Cambios Críticos</a></li>
-                    <li><a href="#" data-module="em">Evaluación de Madurez</a></li>
-                    <li><a href="#" data-module="smd">Simulador de Migración de Datos</a></li>
-                </ul>
-            </nav>
-        </aside>
-        <main class="content">
-            <div id="app"></div>
-        </main>
-    </div>
+    <header class="header">
+        <h1 class="title">Centro de Gobierno de Datos</h1>
+        <nav class="top-nav">
+            <div class="dropdown">
+                <button class="dropbtn">Módulos</button>
+                <div class="dropdown-content">
+                    <a href="#" data-module="gdd">Glosario y Diccionario de Datos</a>
+                    <a href="#" data-module="lcd">Laboratorio de Calidad de Datos</a>
+                    <a href="#" data-module="spa">Seguridad y Perfilamiento de Accesos</a>
+                    <a href="#" data-module="ade">Arquitectura de Datos Empresarial</a>
+                    <a href="#" data-module="srg">Simulador de Roles y Gobierno</a>
+                    <a href="#" data-module="cld">Catálogo y Lineaje de Datos</a>
+                    <a href="#" data-module="kmg">KPIs y Métricas de Gobierno</a>
+                    <a href="#" data-module="wcc">Workflow de Cambios Críticos</a>
+                    <a href="#" data-module="em">Evaluación de Madurez</a>
+                    <a href="#" data-module="smd">Simulador de Migración de Datos</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main class="content">
+        <div id="app"></div>
+        <div id="records-container">
+            <h2>Registros Guardados</h2>
+            <div id="records-table"></div>
+        </div>
+    </main>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="js/model/model.js"></script>
