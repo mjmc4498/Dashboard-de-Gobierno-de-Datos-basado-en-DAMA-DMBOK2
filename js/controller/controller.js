@@ -1,18 +1,17 @@
 const controller = {
     currentModuleKey: null,
+    editingIndex: null,
 
     init() {
-        view.dropbtn.addEventListener('click', () => {
-            view.dropdown.classList.toggle('active');
-        });
-
         view.bindMenu(this.handleMenuClick.bind(this));
-        view.bindSave(this.handleAddRecord.bind(this));
+        view.bindSave(this.handleSave.bind(this));
         view.bindClearForm(this.handleClearForm.bind(this));
         view.bindClearRecords(this.handleClearRecords.bind(this));
         view.bindImportExcel(this.handleImportExcel.bind(this));
         view.bindExportExcel(this.handleExportExcel.bind(this));
         view.bindExportPdf(this.handleExportPdf.bind(this));
+        view.bindEdit(this.handleEdit.bind(this));
+        view.bindDelete(this.handleDelete.bind(this));
 
         const firstModuleKey = view.menuLinks[0].dataset.module;
         this.loadModule(firstModuleKey);
@@ -20,6 +19,7 @@ const controller = {
 
     loadModule(moduleKey) {
         this.currentModuleKey = moduleKey;
+        this.editingIndex = null;
         const module = model.getModule(moduleKey);
         view.renderModule(module);
         view.setActiveLink(moduleKey);
@@ -34,13 +34,19 @@ const controller = {
 
     handleMenuClick(moduleKey) {
         this.loadModule(moduleKey);
-        view.dropdown.classList.remove('active');
     },
 
-    handleAddRecord() {
+    handleSave() {
         const module = model.getModule(this.currentModuleKey);
         const record = view.getFormData(module);
-        model.addRecord(this.currentModuleKey, record);
+
+        if (this.editingIndex !== null) {
+            model.updateRecord(this.currentModuleKey, this.editingIndex, record);
+            this.editingIndex = null;
+        } else {
+            model.addRecord(this.currentModuleKey, record);
+        }
+
         this.updateRecordsTable();
         view.clearForm(module);
     },
@@ -48,11 +54,30 @@ const controller = {
     handleClearForm() {
         const module = model.getModule(this.currentModuleKey);
         view.clearForm(module);
+        this.editingIndex = null;
     },
 
     handleClearRecords() {
         if (confirm('¿Estás seguro de que quieres borrar todos los registros de este módulo?')) {
             model.clearRecords(this.currentModuleKey);
+            this.updateRecordsTable();
+        }
+    },
+
+    handleEdit(index) {
+        this.editingIndex = index;
+        const module = model.getModule(this.currentModuleKey);
+        const records = model.getRecords(this.currentModuleKey);
+        const record = records[index];
+
+        module.fields.forEach(field => {
+            document.getElementById(field.name).value = record[field.name] || '';
+        });
+    },
+
+    handleDelete(index) {
+        if (confirm('¿Estás seguro de que quieres borrar este registro?')) {
+            model.deleteRecord(this.currentModuleKey, index);
             this.updateRecordsTable();
         }
     },

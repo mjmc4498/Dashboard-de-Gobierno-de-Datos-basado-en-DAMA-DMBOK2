@@ -104,6 +104,18 @@ const model = {
         localStorage.setItem(moduleKey, JSON.stringify(records));
     },
 
+    deleteRecord(moduleKey, index) {
+        const records = this.getRecords(moduleKey);
+        records.splice(index, 1);
+        localStorage.setItem(moduleKey, JSON.stringify(records));
+    },
+
+    updateRecord(moduleKey, index, data) {
+        const records = this.getRecords(moduleKey);
+        records[index] = data;
+        localStorage.setItem(moduleKey, JSON.stringify(records));
+    },
+
     clearRecords(moduleKey) {
         localStorage.removeItem(moduleKey);
     },

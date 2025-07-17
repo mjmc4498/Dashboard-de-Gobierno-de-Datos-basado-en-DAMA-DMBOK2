@@ -64,13 +64,19 @@ const view = {
         module.fields.forEach(field => {
             tableHtml += `<th>${field.label}</th>`;
         });
-        tableHtml += '</tr></thead><tbody>';
+        tableHtml += '<th>Acciones</th></tr></thead><tbody>';
 
-        records.forEach(record => {
+        records.forEach((record, index) => {
             tableHtml += '<tr>';
             module.fields.forEach(field => {
                 tableHtml += `<td>${record[field.name] || ''}</td>`;
             });
+            tableHtml += `
+                <td>
+                    <button class="btn btn-sm btn-primary btn-edit" data-index="${index}">Editar</button>
+                    <button class="btn btn-sm btn-danger btn-delete" data-index="${index}">Eliminar</button>
+                </td>
+            `;
             tableHtml += '</tr>';
         });
 
@@ -151,6 +157,22 @@ const view = {
                 const moduleKey = event.target.dataset.module;
                 handler(moduleKey);
             });
+        });
+    },
+
+    bindEdit(handler) {
+        this.recordsTable.addEventListener('click', event => {
+            if (event.target.classList.contains('btn-edit')) {
+                handler(event.target.dataset.index);
+            }
+        });
+    },
+
+    bindDelete(handler) {
+        this.recordsTable.addEventListener('click', event => {
+            if (event.target.classList.contains('btn-delete')) {
+                handler(event.target.dataset.index);
+            }
         });
     }
 };
