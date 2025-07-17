@@ -8,7 +8,7 @@ const view = {
         this.appContainer.innerHTML = `
             <h2>${indicators.title}</h2>
             <div class="row">
-                <div class="col-md-4 mb-4">
+                <div class="col-lg-3 col-md-6 mb-4">
                     <div class="card text-center h-100">
                         <div class="card-body">
                             <h5 class="card-title">Términos en Glosario</h5>
@@ -16,7 +16,7 @@ const view = {
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 mb-4">
+                <div class="col-lg-3 col-md-6 mb-4">
                     <div class="card text-center h-100">
                         <div class="card-body">
                             <h5 class="card-title">Reglas de Calidad</h5>
@@ -24,11 +24,37 @@ const view = {
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 mb-4">
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Roles de Gobierno</h5>
+                            <p class="card-text fs-1">${indicators.rolesCount}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
                     <div class="card text-center h-100">
                         <div class="card-body">
                             <h5 class="card-title">Madurez Promedio</h5>
                             <p class="card-text fs-1">${indicators.avgMaturity.toFixed(1)} / 5</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Distribución de Dimensiones de Calidad</h5>
+                            <canvas id="qualityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Nivel de Madurez por Dominio</h5>
+                            <canvas id="maturityChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -69,17 +95,29 @@ const view = {
 
     renderField(field) {
         const tooltipHtml = field.tooltip ? `data-bs-toggle="tooltip" data-bs-placement="top" title="${field.tooltip}"` : '';
+        const requiredHtml = field.required ? 'required' : '';
+        let fieldHtml = '';
+
         switch (field.type) {
             case 'textarea':
-                return `<textarea id="${field.name}" name="${field.name}" class="form-control" ${field.required ? 'required' : ''} ${tooltipHtml}></textarea>`;
+                fieldHtml = `<textarea id="${field.name}" name="${field.name}" class="form-control" ${requiredHtml} ${tooltipHtml}></textarea>`;
+                break;
             case 'select':
-                return `
-                    <select id="${field.name}" name="${field.name}" class="form-select" ${tooltipHtml}>
+                fieldHtml = `
+                    <select id="${field.name}" name="${field.name}" class="form-select" ${requiredHtml} ${tooltipHtml}>
+                        <option value="">Seleccionar...</option>
                         ${field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
                     </select>`;
+                break;
             default:
-                return `<input type="${field.type}" id="${field.name}" name="${field.name}" class="form-control" ${field.required ? 'required' : ''} ${tooltipHtml}>`;
+                fieldHtml = `<input type="${field.type}" id="${field.name}" name="${field.name}" class="form-control" ${requiredHtml} ${tooltipHtml}>`;
         }
+
+        if (field.required) {
+            fieldHtml += `<div class="invalid-feedback">Este campo es obligatorio.</div>`;
+        }
+
+        return fieldHtml;
     },
 
     initializeTooltips() {

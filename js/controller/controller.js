@@ -35,6 +35,7 @@ const controller = {
     renderDashboard(module) {
         const glossaryCount = model.getRecords('gdd').length;
         const qualityRulesCount = model.getRecords('lcd').length;
+        const rolesCount = model.getRecords('srg').length;
 
         const maturityRecords = model.getRecords('em');
         let totalMaturity = 0;
@@ -47,9 +48,58 @@ const controller = {
             title: module.title,
             glossaryCount,
             qualityRulesCount,
+            rolesCount,
             avgMaturity
         };
         view.renderDashboard(indicators);
+        this.renderCharts();
+    },
+
+    renderCharts() {
+        // Gráfico de Dimensiones de Calidad
+        const qualityRecords = model.getRecords('lcd');
+        const qualityDimensions = {};
+        qualityRecords.forEach(r => {
+            qualityDimensions[r.dimension] = (qualityDimensions[r.dimension] || 0) + 1;
+        });
+
+        new Chart(document.getElementById('qualityChart'), {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(qualityDimensions),
+                datasets: [{
+                    data: Object.values(qualityDimensions),
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
+                }]
+            }
+        });
+
+        // Gráfico de Madurez por Dominio
+        const maturityRecords = model.getRecords('em');
+        const maturityByDomain = {};
+        maturityRecords.forEach(r => {
+            maturityByDomain[r.domain] = Number(r.currentLevel || 0);
+        });
+
+        new Chart(document.getElementById('maturityChart'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(maturityByDomain),
+                datasets: [{
+                    label: 'Nivel de Madurez Actual',
+                    data: Object.values(maturityByDomain),
+                    backgroundColor: '#36A2EB',
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 5
+                    }
+                }
+            }
+        });
     },
 
     updateRecordsTable() {
@@ -63,6 +113,13 @@ const controller = {
     },
 
     handleSave() {
+        const form = document.getElementById('app-form');
+        if (!form.checkValidity()) {
+            form.classList.add('was-validated');
+            return;
+        }
+        form.classList.remove('was-validated');
+
         const module = model.getModule(this.currentModuleKey);
         const record = view.getFormData(module);
 
