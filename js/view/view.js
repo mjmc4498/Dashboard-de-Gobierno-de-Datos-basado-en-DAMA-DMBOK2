@@ -2,6 +2,7 @@ const view = {
     appContainer: document.getElementById('app'),
     recordsTable: document.getElementById('records-table'),
     recordsContainer: document.getElementById('records-container'),
+    modalContainer: document.getElementById('modal-container'),
     menuLinks: document.querySelectorAll('.dropdown-item'),
 
     renderDashboard(indicators) {
@@ -86,11 +87,39 @@ const view = {
                 <button class="btn btn-info btn-export-pdf">Exportar a PDF</button>
                 <input type="file" id="import-excel" class="d-none" accept=".xlsx, .xls">
                 <button class="btn btn-warning btn-import" onclick="document.getElementById('import-excel').click()">Importar desde Excel</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#importHelpModal">
+                    ?
+                </button>
             </div>
         `;
 
         this.appContainer.innerHTML = formHtml;
         this.initializeTooltips();
+    },
+
+    renderImportHelpModal(module) {
+        const fieldNames = module.fields.map(f => `<code>${f.name}</code>`).join(', ');
+        const exampleHeader = module.fields.map(f => f.name).join(' | ');
+        const exampleRow = module.fields.map(f => '...').join(' | ');
+
+        this.modalContainer.innerHTML = `
+            <div class="modal fade" id="importHelpModal" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Guía de Importación para: ${module.title}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Para importar datos correctamente, la primera fila de tu archivo Excel debe contener los siguientes encabezados, exactamente como se muestran:</p>
+                            <p>${fieldNames}</p>
+                            <p><strong>Ejemplo de estructura:</strong></p>
+                            <pre><code>${exampleHeader}\n${exampleRow}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
     },
 
     renderField(field) {

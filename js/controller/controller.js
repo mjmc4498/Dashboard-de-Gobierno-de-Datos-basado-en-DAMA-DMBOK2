@@ -24,8 +24,10 @@ const controller = {
 
         if (module.isDashboard) {
             this.renderDashboard(module);
+            view.modalContainer.innerHTML = ''; // Limpiar el modal si existe
         } else {
             view.renderModule(module);
+            view.renderImportHelpModal(module);
             this.updateRecordsTable();
         }
 
