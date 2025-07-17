@@ -1,9 +1,44 @@
 const view = {
     appContainer: document.getElementById('app'),
     recordsTable: document.getElementById('records-table'),
+    recordsContainer: document.getElementById('records-container'),
     menuLinks: document.querySelectorAll('.dropdown-item'),
 
+    renderDashboard(indicators) {
+        this.appContainer.innerHTML = `
+            <h2>${indicators.title}</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Términos en Glosario</h5>
+                            <p class="card-text fs-1">${indicators.glossaryCount}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Reglas de Calidad</h5>
+                            <p class="card-text fs-1">${indicators.qualityRulesCount}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Madurez Promedio</h5>
+                            <p class="card-text fs-1">${indicators.avgMaturity.toFixed(1)} / 5</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        this.recordsContainer.classList.add('d-none');
+    },
+
     renderModule(module) {
+        this.recordsContainer.classList.remove('d-none');
         if (!module) return;
 
         let formHtml = `<h2>${module.title}</h2>`;

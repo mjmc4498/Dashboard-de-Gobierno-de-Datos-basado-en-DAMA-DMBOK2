@@ -86,6 +86,10 @@ const model = {
                 { name: 'mapping', label: 'Mapeo de Datos (Simulado)', type: 'textarea', tooltip: 'Reglas de correspondencia entre campos. Ej. origen.nombre_cliente -> destino.customer_name.' },
                 { name: 'validationPlan', label: 'Plan de Validación Post-Migración', type: 'textarea', tooltip: 'Estrategia para verificar que los datos se migraron correctamente.' }
             ]
+        },
+        dashboard: {
+            title: 'Dashboard de Indicadores',
+            isDashboard: true
         }
     },
 

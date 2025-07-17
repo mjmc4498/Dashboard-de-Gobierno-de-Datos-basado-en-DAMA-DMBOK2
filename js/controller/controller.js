@@ -21,9 +21,35 @@ const controller = {
         this.currentModuleKey = moduleKey;
         this.editingIndex = null;
         const module = model.getModule(moduleKey);
-        view.renderModule(module);
+
+        if (module.isDashboard) {
+            this.renderDashboard(module);
+        } else {
+            view.renderModule(module);
+            this.updateRecordsTable();
+        }
+
         view.setActiveLink(moduleKey);
-        this.updateRecordsTable();
+    },
+
+    renderDashboard(module) {
+        const glossaryCount = model.getRecords('gdd').length;
+        const qualityRulesCount = model.getRecords('lcd').length;
+
+        const maturityRecords = model.getRecords('em');
+        let totalMaturity = 0;
+        if (maturityRecords.length > 0) {
+            totalMaturity = maturityRecords.reduce((sum, record) => sum + Number(record.currentLevel || 0), 0);
+        }
+        const avgMaturity = maturityRecords.length > 0 ? totalMaturity / maturityRecords.length : 0;
+
+        const indicators = {
+            title: module.title,
+            glossaryCount,
+            qualityRulesCount,
+            avgMaturity
+        };
+        view.renderDashboard(indicators);
     },
 
     updateRecordsTable() {
