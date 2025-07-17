@@ -1,9 +1,7 @@
 const view = {
     appContainer: document.getElementById('app'),
     recordsTable: document.getElementById('records-table'),
-    menuLinks: document.querySelectorAll('.dropdown-content a'),
-    dropdown: document.querySelector('.dropdown'),
-    dropbtn: document.querySelector('.dropbtn'),
+    menuLinks: document.querySelectorAll('.dropdown-item'),
 
     renderModule(module) {
         if (!module) return;
@@ -11,50 +9,58 @@ const view = {
         let formHtml = `<h2>${module.title}</h2>`;
         module.fields.forEach(field => {
             formHtml += `
-                <div class="form-group">
-                    <label for="${field.name}">${field.label} ${field.required ? '*' : ''}</label>
+                <div class="mb-3">
+                    <label for="${field.name}" class="form-label">${field.label} ${field.required ? '<span class="text-danger">*</span>' : ''}</label>
                     ${this.renderField(field)}
-                    ${field.tooltip ? `<span class="tooltip">? <span class="tooltiptext">${field.tooltip}</span></span>` : ''}
                 </div>
             `;
         });
 
         formHtml += `
-            <div class="buttons">
+            <div class="d-flex flex-wrap gap-2">
                 <button class="btn btn-primary btn-save">Añadir Registro</button>
                 <button class="btn btn-secondary btn-clear-form">Limpiar Formulario</button>
                 <button class="btn btn-danger btn-clear-records">Limpiar Registros</button>
-                <button class="btn btn-export btn-excel">Exportar a Excel</button>
-                <button class="btn btn-export btn-pdf">Exportar a PDF</button>
-                <input type="file" id="import-excel" style="display: none;" accept=".xlsx, .xls">
-                <button class="btn btn-import" onclick="document.getElementById('import-excel').click()">Importar desde Excel</button>
+                <button class="btn btn-success btn-export-excel">Exportar a Excel</button>
+                <button class="btn btn-info btn-export-pdf">Exportar a PDF</button>
+                <input type="file" id="import-excel" class="d-none" accept=".xlsx, .xls">
+                <button class="btn btn-warning btn-import" onclick="document.getElementById('import-excel').click()">Importar desde Excel</button>
             </div>
         `;
 
         this.appContainer.innerHTML = formHtml;
+        this.initializeTooltips();
     },
 
     renderField(field) {
+        const tooltipHtml = field.tooltip ? `data-bs-toggle="tooltip" data-bs-placement="top" title="${field.tooltip}"` : '';
         switch (field.type) {
             case 'textarea':
-                return `<textarea id="${field.name}" name="${field.name}" ${field.required ? 'required' : ''}></textarea>`;
+                return `<textarea id="${field.name}" name="${field.name}" class="form-control" ${field.required ? 'required' : ''} ${tooltipHtml}></textarea>`;
             case 'select':
                 return `
-                    <select id="${field.name}" name="${field.name}">
+                    <select id="${field.name}" name="${field.name}" class="form-select" ${tooltipHtml}>
                         ${field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
                     </select>`;
             default:
-                return `<input type="${field.type}" id="${field.name}" name="${field.name}" ${field.required ? 'required' : ''}>`;
+                return `<input type="${field.type}" id="${field.name}" name="${field.name}" class="form-control" ${field.required ? 'required' : ''} ${tooltipHtml}>`;
         }
+    },
+
+    initializeTooltips() {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
     },
 
     renderTable(module, records) {
         if (records.length === 0) {
-            this.recordsTable.innerHTML = '<p>No hay registros guardados.</p>';
+            this.recordsTable.innerHTML = '<div class="alert alert-info">No hay registros guardados.</div>';
             return;
         }
 
-        let tableHtml = '<table><thead><tr>';
+        let tableHtml = '<table class="table table-striped table-hover"><thead><tr>';
         module.fields.forEach(field => {
             tableHtml += `<th>${field.label}</th>`;
         });
@@ -92,7 +98,7 @@ const view = {
 
     setActiveLink(moduleKey) {
         this.menuLinks.forEach(l => l.classList.remove('active'));
-        const link = document.querySelector(`.dropdown-content a[data-module="${moduleKey}"]`);
+        const link = document.querySelector(`.dropdown-item[data-module="${moduleKey}"]`);
         if (link) {
             link.classList.add('active');
         }
